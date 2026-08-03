@@ -44,24 +44,28 @@ body.light {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   color: var(--text-primary);
-  height: 100vh;
-  height: 100dvh;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   user-select: none;
   -webkit-user-select: none;
+  display: flex;
+  justify-content: center;
 }
 
 #app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
+  width: 100%;
+  height: 100%;
   max-width: 480px;
-  margin: 0 auto;
+  background: var(--bg-primary);
+  position: relative;
+  overflow: hidden;
 }
 
 /* === 顶部标题栏 === */
@@ -479,11 +483,22 @@ body {
 }
 
 /* === AI 聊天 === */
+.main-content:has(#tab-chat.active) {
+  overflow-y: hidden;
+}
+
+#tab-chat.tab-content.active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
-  height: calc(100dvh - var(--header-height) - var(--nav-height) - 32px);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .chat-messages {
@@ -493,6 +508,7 @@ body {
   flex-direction: column;
   gap: 12px;
   padding: 8px 0;
+  min-height: 0;
 }
 
 .chat-message {
@@ -566,16 +582,18 @@ body {
 }
 
 .chat-input-area button {
-  width: 48px;
-  height: 48px;
+  padding: 12px 20px;
+  height: 44px;
   border: none;
-  border-radius: 50%;
+  border-radius: 22px;
   background: var(--accent);
   color: white;
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .chat-input-area button:active {

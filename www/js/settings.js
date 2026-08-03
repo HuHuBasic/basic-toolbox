@@ -1,5 +1,7 @@
 /* === 设置模块 === */
 const Settings = {
+  VERSION: '2.0.2',
+
   defaults: {
     theme: 'dark',
     precision: 6,
@@ -74,13 +76,21 @@ const Settings = {
     }
 
     const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) themeToggle.checked = this.defaults.theme === 'light';
+    if (themeToggle) themeToggle.checked = this.defaults.theme !== 'light';
 
     const precisionSelect = document.getElementById('precision-select');
     if (precisionSelect) precisionSelect.value = String(this.defaults.precision);
 
     const vibrationToggle = document.getElementById('vibration-toggle');
     if (vibrationToggle) vibrationToggle.checked = this.defaults.vibration;
+
+    // Update version displays
+    const headerVer = document.getElementById('header-version');
+    if (headerVer) headerVer.textContent = 'v' + this.VERSION;
+    const updateVer = document.getElementById('update-version-text');
+    if (updateVer) updateVer.textContent = '当前版本 v' + this.VERSION;
+    const aboutVer = document.getElementById('about-version');
+    if (aboutVer) aboutVer.textContent = 'Basic 工具箱 v' + this.VERSION;
 
     this.renderModelList();
     this.renderMemories();
@@ -230,7 +240,7 @@ const Settings = {
   /* ========== 事件绑定 ========== */
   bindEvents() {
     document.getElementById('theme-toggle').addEventListener('change', (e) => {
-      this.set('theme', e.target.checked ? 'light' : 'dark');
+      this.set('theme', e.target.checked ? 'dark' : 'light');
     });
 
     document.getElementById('precision-select').addEventListener('change', (e) => {
@@ -259,10 +269,38 @@ const Settings = {
     modal.classList.add('show');
     message.textContent = '正在检查更新...';
     confirmBtn.style.display = 'none';
-    setTimeout(() => {
-      message.innerHTML = '当前版本：<strong>v2.0</strong><br><br>✅ 已是最新版本！<br><br>新功能：上传图片/视频/文件/音频、联网搜索、深度思考、长期记忆。';
-      confirmBtn.style.display = 'none';
-    }, 1500);
+
+    fetch('https://api.github.com/repos/HuHuBasic/basic-toolbox/releases/latest')
+      .then(res => res.json())
+      .then(data => {
+        const latestVer = (data.tag_name || '').replace('v', '');
+        const curVer = this.VERSION;
+        if (this._compareVersions(latestVer, curVer) > 0) {
+          const body = (data.body || '').replace(/\n/g, '<br>');
+          message.innerHTML = `发现新版本：<strong>v${latestVer}</strong>（当前 v${curVer}）<br><br>${body}`;
+          confirmBtn.style.display = 'inline-block';
+          confirmBtn.textContent = '前往下载';
+          confirmBtn.onclick = () => { window.open(data.html_url, '_blank'); };
+        } else {
+          message.innerHTML = `当前版本：<strong>v${curVer}</strong><br><br>✅ 已是最新版本！`;
+          confirmBtn.style.display = 'none';
+        }
+      })
+      .catch(() => {
+        message.innerHTML = `当前版本：<strong>v${this.VERSION}</strong><br><br>⚠️ 无法连接更新服务器<br><br><small>请检查网络后重试，或访问 GitHub 仓库查看最新版本</small>`;
+        confirmBtn.style.display = 'none';
+      });
+  },
+
+  _compareVersions(a, b) {
+    const pa = (a || '0').split('.').map(Number);
+    const pb = (b || '0').split('.').map(Number);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const na = pa[i] || 0, nb = pb[i] || 0;
+      if (na > nb) return 1;
+      if (na < nb) return -1;
+    }
+    return 0;
   },
 
   closeModal() {

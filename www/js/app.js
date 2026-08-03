@@ -6,6 +6,7 @@
   function initTabs() {
     const navBtns = document.querySelectorAll('.nav-btn');
     const tabContents = document.querySelectorAll('.tab-content');
+    const mainContent = document.querySelector('.main-content');
 
     navBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -15,6 +16,11 @@
         tabContents.forEach(tc => tc.classList.remove('active'));
         const target = document.getElementById('tab-' + tabName);
         if (target) target.classList.add('active');
+
+        // Chat tab needs different overflow handling
+        if (mainContent) {
+          mainContent.style.overflowY = (tabName === 'chat') ? 'hidden' : 'auto';
+        }
       });
     });
   }

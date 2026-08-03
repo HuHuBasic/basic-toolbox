@@ -124,42 +124,74 @@ const AIChat = {
   },
 
   async loadModel(modelId, showProgress) {
-    try {
-      const config = this.getModelConfig(modelId);
-      const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.0.0');
-      env.allowLocalModels = false;
-      env.useBrowserCache = true;
-      env.cacheRepo = 'basic-toolbox-models';
-      this.showProgressBar(true, config.name);
-      this.pipeline = await pipeline('text-generation', modelId, {
-        dtype: config.dtype,
-        device: 'webgpu',
-        progress_callback: (p) => { if (showProgress && p && p.status) this.updateProgressBar(p); }
-      });
-      this.onModelLoaded(modelId, config);
-    } catch (e) {
-      console.error('Model load error:', e);
-      if (e.message && (e.message.includes('WebGPU') || e.message.includes('webgpu'))) {
-        try {
-          this.updateProgressStatus('WebGPU 不可用，切换到 WASM 后端...');
-          const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.0.0');
-          env.allowLocalModels = false; env.useBrowserCache = true; env.cacheRepo = 'basic-toolbox-models';
-          const config = this.getModelConfig(modelId);
-          this.pipeline = await pipeline('text-generation', modelId, {
-            dtype: config.dtype, device: 'wasm',
-            progress_callback: (p) => { if (p && p.status) this.updateProgressBar(p); }
-          });
-          this.onModelLoaded(modelId, config, 'WASM');
-          return;
-        } catch (e2) {
-          this.showProgressBar(false); this.modelLoading = false; this.currentModel = null;
-          this.addMessage('bot', '模型加载失败：' + (e2.message || '未知错误') + '\n\n可能原因：网络连接问题、存储空间不足、浏览器不支持。请尝试其他模型。');
-          return;
+    // 国内镜像站列表，按优先级排列
+    const MIRRORS = [
+      'https://hf-mirror.com',
+      'https://huggingface.co'
+    ];
+    let lastError = null;
+
+    for (let mirrorIdx = 0; mirrorIdx < MIRRORS.length; mirrorIdx++) {
+      try {
+        const config = this.getModelConfig(modelId);
+        const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.0.0');
+
+        // 设置镜像站
+        env.remoteHost = MIRRORS[mirrorIdx];
+        // 镜像站路径模板: {model}/resolve/{revision}/{file}
+        env.remotePathTemplate = '{model}/resolve/{revision}/{file}';
+        env.allowLocalModels = false;
+        env.useBrowserCache = true;
+        env.cacheRepo = 'basic-toolbox-models';
+
+        const mirrorLabel = mirrorIdx === 0 ? '（镜像站）' : '（直连）';
+        this.showProgressBar(true, config.name);
+        this.updateProgressStatus('使用 ' + MIRRORS[mirrorIdx].replace('https://', '') + mirrorLabel);
+
+        this.pipeline = await pipeline('text-generation', modelId, {
+          dtype: config.dtype,
+          device: 'webgpu',
+          progress_callback: (p) => { if (showProgress && p && p.status) this.updateProgressBar(p); }
+        });
+        this.onModelLoaded(modelId, config);
+        return; // 成功，退出循环
+      } catch (e) {
+        console.error('Model load error (mirror ' + mirrorIdx + '):', e);
+        lastError = e;
+
+        if (e.message && (e.message.includes('WebGPU') || e.message.includes('webgpu'))) {
+          try {
+            this.updateProgressStatus('WebGPU 不可用，切换到 WASM 后端...');
+            const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.0.0');
+            env.remoteHost = MIRRORS[mirrorIdx];
+            env.remotePathTemplate = '{model}/resolve/{revision}/{file}';
+            env.allowLocalModels = false; env.useBrowserCache = true; env.cacheRepo = 'basic-toolbox-models';
+            const config = this.getModelConfig(modelId);
+            this.pipeline = await pipeline('text-generation', modelId, {
+              dtype: config.dtype, device: 'wasm',
+              progress_callback: (p) => { if (p && p.status) this.updateProgressBar(p); }
+            });
+            this.onModelLoaded(modelId, config, 'WASM');
+            return;
+          } catch (e2) {
+            lastError = e2;
+            // 继续尝试下一个镜像
+          }
         }
+        // 继续尝试下一个镜像
       }
-      this.showProgressBar(false); this.modelLoading = false; this.currentModel = null;
-      this.addMessage('bot', '模型加载失败：' + (e.message || '未知错误') + '\n\n请尝试其他模型。');
     }
+
+    // 所有镜像都失败
+    this.showProgressBar(false); this.modelLoading = false; this.currentModel = null;
+    const errMsg = lastError ? (lastError.message || '未知错误') : '所有镜像站均无法连接';
+    this.addMessage('bot',
+      '❌ 模型下载失败：' + errMsg + '\n\n'
+      + '可能原因：\n'
+      + '• 网络连接问题（请检查网络）\n'
+      + '• Hugging Face 及镜像站均不可达\n'
+      + '• 存储空间不足\n\n'
+      + '建议：切换 Wi-Fi 或移动网络后重试，或尝试其他模型。');
   },
 
   onModelLoaded(modelId, config, backend) {
