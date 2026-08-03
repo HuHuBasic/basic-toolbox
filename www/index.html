@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Basic 工具箱</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部标题栏 -->
+    <header class="header">
+      <h1 class="app-title">Basic 工具箱</h1>
+      <span class="version-badge">v1.3.0</span>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 科学计算器 -->
+      <section id="tab-calculator" class="tab-content active">
+        <div class="calculator-container">
+          <div class="display">
+            <div class="display-expression" id="calc-expr"></div>
+            <div class="display-result" id="calc-result">0</div>
+          </div>
+          <div class="calc-mode-toggle">
+            <button class="mode-btn active" data-mode="basic">基础</button>
+            <button class="mode-btn" data-mode="scientific">科学</button>
+          </div>
+          <div class="keypad" id="calc-keypad"></div>
+        </div>
+      </section>
+
+      <!-- 解方程 -->
+      <section id="tab-equation" class="tab-content">
+        <div class="equation-container">
+          <h2 class="section-title">方程求解器</h2>
+          <div class="equation-type-selector">
+            <select id="eq-type">
+              <option value="linear">一元一次方程 (ax + b = 0)</option>
+              <option value="quadratic">一元二次方程 (ax² + bx + c = 0)</option>
+              <option value="cubic">一元三次方程 (ax³ + bx² + cx + d = 0)</option>
+              <option value="system2">二元一次方程组</option>
+              <option value="system3">三元一次方程组</option>
+              <option value="nlinear">N 元线性方程组（高斯消元）</option>
+              <option value="npoly">N 次多项式方程</option>
+              <option value="nnonlinear">N 元非线性方程组（牛顿法）</option>
+              <option value="custom">自定义方程 f(x) = 0</option>
+            </select>
+          </div>
+          <div class="equation-inputs" id="eq-inputs"></div>
+          <button class="solve-btn" id="eq-solve-btn">求解</button>
+          <div class="equation-result" id="eq-result"></div>
+          <div class="equation-steps" id="eq-steps"></div>
+        </div>
+      </section>
+
+      <!-- 竖式计算 -->
+      <section id="tab-vertical" class="tab-content">
+        <div class="vertical-container">
+          <h2 class="section-title">竖式计算</h2>
+          <div class="vertical-inputs">
+            <div class="input-row">
+              <input type="number" id="vc-num1" placeholder="第一个数" step="any">
+              <select id="vc-operator">
+                <option value="+">＋</option>
+                <option value="-">－</option>
+                <option value="×">×</option>
+                <option value="÷">÷</option>
+              </select>
+              <input type="number" id="vc-num2" placeholder="第二个数" step="any">
+            </div>
+            <button class="solve-btn" id="vc-calc-btn">计算</button>
+          </div>
+          <div class="vertical-display" id="vc-display"></div>
+          <div class="vertical-result" id="vc-result"></div>
+        </div>
+      </section>
+
+      <!-- AI 聊天 -->
+      <section id="tab-chat" class="tab-content">
+        <div class="chat-container">
+          <h2 class="section-title">AI 聊天助手 <span class="model-badge" id="model-badge" style="display:none;">本地模型</span></h2>
+          <!-- 模型下载进度条 -->
+          <div id="model-download-bar" style="display:none;flex-direction:column;gap:8px;padding:12px 16px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;">
+              <span id="model-download-label">模型下载</span>
+              <span id="model-progress-text">准备中...</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div id="model-progress-fill" style="height:100%;width:0%;background:var(--accent);transition:width 0.3s ease;"></div>
+            </div>
+            <div id="model-download-status" style="font-size:11px;color:var(--text-muted);"></div>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-message bot">
+              <div class="avatar bot-avatar">AI</div>
+              <div class="message-bubble">
+                你好！我是 Basic 工具箱的 <strong>本地 AI 助手</strong>。<br><br>我使用本地大模型运行，<strong>完全离线、隐私安全</strong>。首次使用需要下载模型（约 350MB~1.2GB），下载一次后永久可用。<br><br>请在下方 <strong>设置</strong> 页面中选择模型并下载。
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="输入你的问题..." disabled>
+            <button id="chat-send-btn" disabled>发送</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 设置 -->
+      <section id="tab-settings" class="tab-content">
+        <div class="settings-container">
+          <h2 class="section-title">设置</h2>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-label">主题模式</span>
+                <span class="setting-desc">切换深色/浅色主题</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-label">计算精度</span>
+                <span class="setting-desc">设置小数点后位数</span>
+              </div>
+              <select id="precision-select">
+                <option value="2">2 位</option>
+                <option value="4">4 位</option>
+                <option value="6" selected>6 位</option>
+                <option value="8">8 位</option>
+                <option value="10">10 位</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-label">振动反馈</span>
+                <span class="setting-desc">按键时振动</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="vibration-toggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-label">检查更新</span>
+                <span class="setting-desc">当前版本 v1.3.0</span>
+              </div>
+              <button class="check-update-btn" id="check-update-btn">检查更新</button>
+            </div>
+            <!-- 本地大模型选择 -->
+            <div class="setting-item" style="flex-direction:column;align-items:stretch;gap:12px;">
+              <div class="setting-info">
+                <span class="setting-label">本地 AI 大模型</span>
+                <span class="setting-desc">选择本地运行的大模型，完全离线、隐私安全</span>
+              </div>
+              <div id="local-model-list" style="display:flex;flex-direction:column;gap:8px;">
+                <!-- 动态生成模型列表 -->
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);">
+                模型使用 Transformers.js + ONNX 在浏览器本地运行。首次下载后缓存在浏览器中，之后无需联网。
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-label">关于</span>
+                <span class="setting-desc">Basic 工具箱 v1.3.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-tab="calculator">
+        <span class="nav-icon">🔢</span>
+        <span class="nav-label">计算器</span>
+      </button>
+      <button class="nav-btn" data-tab="equation">
+        <span class="nav-icon">📐</span>
+        <span class="nav-label">解方程</span>
+      </button>
+      <button class="nav-btn" data-tab="vertical">
+        <span class="nav-icon">📝</span>
+        <span class="nav-label">竖式</span>
+      </button>
+      <button class="nav-btn" data-tab="chat">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-label">AI 聊天</span>
+      </button>
+      <button class="nav-btn" data-tab="settings">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">设置</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- 更新提示弹窗 -->
+  <div class="modal-overlay" id="update-modal">
+    <div class="modal">
+      <h3>检查更新</h3>
+      <p id="update-message">正在检查更新...</p>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="update-cancel">取消</button>
+        <button class="modal-btn confirm" id="update-confirm" style="display:none;">下载更新</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/calculator.js"></script>
+  <script src="js/equation-solver.js"></script>
+  <script src="js/vertical-calc.js"></script>
+  <script src="js/ai-chat.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

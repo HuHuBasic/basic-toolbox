@@ -1,0 +1,7 @@
+node_modules/
+platforms/
+plugins/
+*.apk
+*.keystore
+.DS_Store
+*.log

@@ -1,0 +1,22 @@
+{
+  "name": "Basic 工具箱",
+  "short_name": "Basic工具箱",
+  "description": "多功能实用工具箱 - 科学计算器、解方程、竖式计算、AI聊天",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0f1a",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
