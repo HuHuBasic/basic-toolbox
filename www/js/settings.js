@@ -40,6 +40,7 @@ const Settings = {
     this.load();
     this.bindEvents();
     this.renderModelList();
+    this.renderMemories();
   },
 
   load() {
@@ -82,6 +83,7 @@ const Settings = {
     if (vibrationToggle) vibrationToggle.checked = this.defaults.vibration;
 
     this.renderModelList();
+    this.renderMemories();
     this.updateChatUI();
   },
 
@@ -194,6 +196,37 @@ const Settings = {
     }
   },
 
+  /* ========== 记忆管理 ========== */
+  renderMemories() {
+    const container = document.getElementById('memories-list');
+    if (!container) return;
+    const memories = AIChat.getMemories();
+    if (memories.length === 0) {
+      container.innerHTML = '<span style="font-size:12px;color:var(--text-muted);">暂无记忆</span>';
+      return;
+    }
+    container.innerHTML = memories.map(m => `
+      <div class="memory-item">
+        <div class="memory-item-key">${m.key}</div>
+        <div class="memory-item-value">${m.value}</div>
+        <button class="memory-item-del" data-key="${m.key}" title="删除">✕</button>
+      </div>`).join('');
+    // Bind delete
+    container.querySelectorAll('.memory-item-del').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const key = e.target.dataset.key;
+        const memories = AIChat.getMemories().filter(m => m.key !== key);
+        AIChat.saveMemories(memories);
+        this.renderMemories();
+      });
+    });
+  },
+
+  clearMemories() {
+    AIChat.saveMemories([]);
+    this.renderMemories();
+  },
+
   /* ========== 事件绑定 ========== */
   bindEvents() {
     document.getElementById('theme-toggle').addEventListener('change', (e) => {
@@ -211,6 +244,12 @@ const Settings = {
     document.getElementById('check-update-btn').addEventListener('click', () => this.checkUpdate());
     document.getElementById('update-cancel').addEventListener('click', () => this.closeModal());
     document.getElementById('update-confirm').addEventListener('click', () => this.downloadUpdate());
+
+    // Clear memories
+    const clearMemBtn = document.getElementById('clear-memories-btn');
+    if (clearMemBtn) clearMemBtn.addEventListener('click', () => {
+      if (confirm('确定要清空所有记忆吗？此操作不可撤销。')) this.clearMemories();
+    });
   },
 
   checkUpdate() {
@@ -221,7 +260,7 @@ const Settings = {
     message.textContent = '正在检查更新...';
     confirmBtn.style.display = 'none';
     setTimeout(() => {
-      message.innerHTML = '当前版本：<strong>v1.3.0</strong><br><br>✅ 已是最新版本！<br><br>新功能：本地大模型 AI 对话（完全离线、隐私安全）、N 元 N 次方程求解。';
+      message.innerHTML = '当前版本：<strong>v2.0</strong><br><br>✅ 已是最新版本！<br><br>新功能：上传图片/视频/文件/音频、联网搜索、深度思考、长期记忆。';
       confirmBtn.style.display = 'none';
     }, 1500);
   },

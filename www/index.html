@@ -15,7 +15,7 @@
     <!-- 顶部标题栏 -->
     <header class="header">
       <h1 class="app-title">Basic 工具箱</h1>
-      <span class="version-badge">v1.3.0</span>
+      <span class="version-badge">v2.0</span>
     </header>
 
     <!-- 主内容区 -->
@@ -85,8 +85,18 @@
       <section id="tab-chat" class="tab-content">
         <div class="chat-container">
           <h2 class="section-title">AI 聊天助手 <span class="model-badge" id="model-badge" style="display:none;">本地模型</span></h2>
+          <!-- 聊天工具栏 -->
+          <div class="chat-toolbar">
+            <button class="chat-tool-btn" id="chat-search-toggle" title="联网搜索">🌐 搜索</button>
+            <button class="chat-tool-btn" id="chat-think-toggle" title="深度思考">🧠 思考</button>
+            <button class="chat-tool-btn active" id="chat-memory-toggle" title="长期记忆">💾 记忆</button>
+            <label class="chat-tool-btn chat-upload-btn" title="上传文件">
+              📎 上传
+              <input type="file" id="chat-file-input" multiple accept="image/*,video/*,audio/*,.txt,.md,.json,.csv,.xml,.log,.pdf,.js,.ts,.py,.java,.cpp,.c,.h,.html,.css,.rs,.go,.rb,.php,.swift,.kt,.sh,.zip" hidden>
+            </label>
+          </div>
           <!-- 模型下载进度条 -->
-          <div id="model-download-bar" style="display:none;flex-direction:column;gap:8px;padding:12px 16px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px;">
+          <div id="model-download-bar" style="display:none;flex-direction:column;gap:8px;padding:12px 16px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:8px;">
             <div style="display:flex;justify-content:space-between;font-size:13px;">
               <span id="model-download-label">模型下载</span>
               <span id="model-progress-text">准备中...</span>
@@ -96,11 +106,15 @@
             </div>
             <div id="model-download-status" style="font-size:11px;color:var(--text-muted);"></div>
           </div>
+          <!-- 附件预览区 -->
+          <div id="chat-attachments" class="chat-attachments" style="display:none;"></div>
           <div class="chat-messages" id="chat-messages">
             <div class="chat-message bot">
               <div class="avatar bot-avatar">AI</div>
-              <div class="message-bubble">
-                你好！我是 Basic 工具箱的 <strong>本地 AI 助手</strong>。<br><br>我使用本地大模型运行，<strong>完全离线、隐私安全</strong>。首次使用需要下载模型（约 350MB~1.2GB），下载一次后永久可用。<br><br>请在下方 <strong>设置</strong> 页面中选择模型并下载。
+              <div class="message-content">
+                <div class="message-bubble">
+                  你好！我是 Basic 工具箱的 <strong>本地 AI 助手</strong>。<br><br>✨ <strong>v2.0 新功能：</strong><br>📎 上传图片/视频/文件/音频<br>🌐 联网搜索<br>🧠 深度思考<br>💾 长期记忆<br><br>请在 <strong>设置</strong> 页面中选择模型并下载后开始对话。
+                </div>
               </div>
             </div>
           </div>
@@ -152,9 +166,22 @@
             <div class="setting-item">
               <div class="setting-info">
                 <span class="setting-label">检查更新</span>
-                <span class="setting-desc">当前版本 v1.3.0</span>
+                <span class="setting-desc">当前版本 v2.0</span>
               </div>
               <button class="check-update-btn" id="check-update-btn">检查更新</button>
+            </div>
+            <!-- 记忆管理 -->
+            <div class="setting-item" style="flex-direction:column;align-items:stretch;gap:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="setting-info">
+                  <span class="setting-label">💾 长期记忆</span>
+                  <span class="setting-desc">AI 记住的重要信息，可手动管理</span>
+                </div>
+                <button class="check-update-btn" id="clear-memories-btn" style="color:var(--danger);border-color:var(--danger);">清空全部</button>
+              </div>
+              <div id="memories-list" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;">
+                <span style="font-size:12px;color:var(--text-muted);">暂无记忆</span>
+              </div>
             </div>
             <!-- 本地大模型选择 -->
             <div class="setting-item" style="flex-direction:column;align-items:stretch;gap:12px;">
