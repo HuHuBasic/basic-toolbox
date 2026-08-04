@@ -15,7 +15,7 @@
     <!-- 顶部标题栏 -->
     <header class="header">
       <h1 class="app-title">Basic 工具箱</h1>
-      <span class="version-badge" id="header-version">v2.0.1</span>
+      <span class="version-badge" id="header-version">v2.1.0</span>
     </header>
 
     <!-- 主内容区 -->
@@ -97,14 +97,17 @@
           </div>
           <!-- 模型下载进度条 -->
           <div id="model-download-bar" style="display:none;flex-direction:column;gap:8px;padding:12px 16px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:8px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
               <span id="model-download-label">模型下载</span>
               <span id="model-progress-text">准备中...</span>
             </div>
             <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
               <div id="model-progress-fill" style="height:100%;width:0%;background:var(--accent);transition:width 0.3s ease;"></div>
             </div>
-            <div id="model-download-status" style="font-size:11px;color:var(--text-muted);"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div id="model-download-status" style="font-size:11px;color:var(--text-muted);"></div>
+              <button id="model-download-cancel" style="padding:4px 14px;font-size:12px;background:var(--danger);color:white;border:none;border-radius:12px;cursor:pointer;">取消</button>
+            </div>
           </div>
           <!-- 附件预览区 -->
           <div id="chat-attachments" class="chat-attachments" style="display:none;"></div>
@@ -166,7 +169,7 @@
             <div class="setting-item">
               <div class="setting-info">
                 <span class="setting-label">检查更新</span>
-                <span class="setting-desc" id="update-version-text">当前版本 v2.0.1</span>
+                <span class="setting-desc" id="update-version-text">当前版本 v2.0.2</span>
               </div>
               <button class="check-update-btn" id="check-update-btn">检查更新</button>
             </div>
@@ -196,10 +199,50 @@
                 模型使用 Transformers.js + ONNX 在浏览器本地运行。首次下载后缓存在浏览器中，之后无需联网。
               </div>
             </div>
+            <!-- 云端 AI 模型 -->
+            <div class="setting-item" style="flex-direction:column;align-items:stretch;gap:12px;">
+              <div class="setting-info">
+                <span class="setting-label">☁️ 云端 AI 模型</span>
+                <span class="setting-desc">使用 DeepSeek / 百度文心一言等云端大模型，需填写 API Key</span>
+              </div>
+              <!-- DeepSeek API Key -->
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:12px;color:var(--text-secondary);">🔑 DeepSeek API Key</span>
+                  <a href="https://platform.deepseek.com/api_keys" target="_blank" style="font-size:10px;color:var(--accent);text-decoration:none;">获取 Key →</a>
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <input type="password" id="deepseek-key-input" placeholder="sk-..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
+                  <button class="api-key-toggle" data-target="deepseek-key-input" style="padding:4px 8px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);cursor:pointer;font-size:11px;">👁</button>
+                </div>
+              </div>
+              <!-- 百度 AI Key -->
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:12px;color:var(--text-secondary);">🔑 百度 AI API Key</span>
+                  <a href="https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application" target="_blank" style="font-size:10px;color:var(--accent);text-decoration:none;">获取 Key →</a>
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <input type="password" id="baidu-key-input" placeholder="API Key" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
+                  <button class="api-key-toggle" data-target="baidu-key-input" style="padding:4px 8px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);cursor:pointer;font-size:11px;">👁</button>
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <input type="password" id="baidu-secret-input" placeholder="Secret Key" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
+                  <button class="api-key-toggle" data-target="baidu-secret-input" style="padding:4px 8px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);cursor:pointer;font-size:11px;">👁</button>
+                </div>
+              </div>
+              <!-- 云端模型列表 -->
+              <div id="cloud-model-list" style="display:flex;flex-direction:column;gap:8px;">
+                <!-- 动态生成 -->
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);">
+                API Key 仅保存在浏览器本地，不会上传到任何服务器。DeepSeek 和百度 AI 按用量计费，请自行管理额度。
+              </div>
+            </div>
             <div class="setting-item">
               <div class="setting-info">
                 <span class="setting-label">关于</span>
-                <span class="setting-desc" id="about-version">Basic 工具箱 v2.0.1</span>
+                <span class="setting-desc" id="about-version">Basic 工具箱 v2.0.2</span>
               </div>
             </div>
           </div>
