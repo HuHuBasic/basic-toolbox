@@ -15,7 +15,7 @@
     <!-- 顶部标题栏 -->
     <header class="header">
       <h1 class="app-title">Basic 工具箱</h1>
-      <span class="version-badge" id="header-version">v2.1.0</span>
+      <span class="version-badge" id="header-version">v2.2.0</span>
     </header>
 
     <!-- 主内容区 -->
@@ -169,7 +169,7 @@
             <div class="setting-item">
               <div class="setting-info">
                 <span class="setting-label">检查更新</span>
-                <span class="setting-desc" id="update-version-text">当前版本 v2.0.2</span>
+                <span class="setting-desc" id="update-version-text">当前版本 v2.2.0</span>
               </div>
               <button class="check-update-btn" id="check-update-btn">检查更新</button>
             </div>
@@ -212,8 +212,7 @@
                   <a href="https://platform.deepseek.com/api_keys" target="_blank" style="font-size:10px;color:var(--accent);text-decoration:none;">获取 Key →</a>
                 </div>
                 <div style="display:flex;gap:6px;">
-                  <input type="password" id="deepseek-key-input" placeholder="sk-..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
-                  <button class="api-key-toggle" data-target="deepseek-key-input" style="padding:4px 8px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);cursor:pointer;font-size:11px;">👁</button>
+                  <input type="text" id="deepseek-key-input" placeholder="sk-..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
                 </div>
               </div>
               <!-- 百度 AI Key -->
@@ -223,12 +222,10 @@
                   <a href="https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application" target="_blank" style="font-size:10px;color:var(--accent);text-decoration:none;">获取 Key →</a>
                 </div>
                 <div style="display:flex;gap:6px;">
-                  <input type="password" id="baidu-key-input" placeholder="API Key" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
-                  <button class="api-key-toggle" data-target="baidu-key-input" style="padding:4px 8px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);cursor:pointer;font-size:11px;">👁</button>
+                  <input type="text" id="baidu-key-input" placeholder="API Key" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
                 </div>
                 <div style="display:flex;gap:6px;">
-                  <input type="password" id="baidu-secret-input" placeholder="Secret Key" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
-                  <button class="api-key-toggle" data-target="baidu-secret-input" style="padding:4px 8px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);cursor:pointer;font-size:11px;">👁</button>
+                  <input type="text" id="baidu-secret-input" placeholder="Secret Key" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input);color:var(--text-primary);font-size:12px;">
                 </div>
               </div>
               <!-- 云端模型列表 -->
@@ -242,7 +239,7 @@
             <div class="setting-item">
               <div class="setting-info">
                 <span class="setting-label">关于</span>
-                <span class="setting-desc" id="about-version">Basic 工具箱 v2.0.2</span>
+                <span class="setting-desc" id="about-version">Basic 工具箱 v2.2.0</span>
               </div>
             </div>
           </div>
